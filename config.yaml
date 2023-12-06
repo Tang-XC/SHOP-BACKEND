@@ -1,0 +1,12 @@
+server:
+  env: 'debug'
+  address: '127.0.0.1'
+  port: 8080
+  gracefulShutdownPeriod: 30 #服务器优雅地等待现有连接完成的持续时间 - 例如15s或1m。
+  jwtSecret: who is rich daddy
+db:
+  port: 3306
+  host: "localhost"
+  name: "shop"
+  user: "root"
+  password: "123456"
