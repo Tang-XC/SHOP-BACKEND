@@ -16,6 +16,14 @@ func (r *roleService) List() (model.Roles, error) {
 	}
 	return roles, nil
 }
+func (r *roleService) Create(role *model.Role) (string, error) {
+	message := "创建成功"
+	_, err := r.roleRepository.Create(role)
+	if err != nil {
+		return "", err
+	}
+	return message, nil
+}
 
 func NewRoleService(roleRepository repository.RoleRepository) RoleService {
 	return &roleService{roleRepository: roleRepository}

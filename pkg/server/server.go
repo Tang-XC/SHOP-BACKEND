@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"os"
@@ -66,6 +67,14 @@ func (s *Server) Run() error {
 func (s *Server) initRouter() {
 	root := s.engine
 	root.GET("/", common.WrapFunc(s.getRoutes))
+	root.GET("/metrics", gin.WrapH(promhttp.Handler()))
+	api := root.Group("/api/v1")
+	controllers := make([]string, 0, len(s.controllers))
+	for _, router := range s.controllers {
+		router.RegisterRoute(api)
+		controllers = append(controllers, router.Name())
+	}
+	logrus.Infof("Server enabled controllers: %v", controllers)
 }
 
 // 获取所有路由
@@ -102,12 +111,14 @@ func New(conf *config.Config, logger *logrus.Logger) (*Server, error) {
 	userService := service.NewUserService(repository.User())
 	authService := service.NewAuthService(repository.User())
 	roleService := service.NewRoleService(repository.Role())
+	permissionService := service.NewPermissionService(repository.Permission())
 	//创建表示层
 	userController := controller.NewUserController(userService)
 	authController := controller.NewAuthController(userService, authService)
 	roleController := controller.NewRoleController(roleService)
+	permissionController := controller.NewPermissionController(permissionService)
 
-	controllers := []controller.Controller{userController, authController, roleController}
+	controllers := []controller.Controller{userController, authController, roleController, permissionController}
 	e := gin.Default()
 	e.Use(
 		middleware.CORSMiddleware(),

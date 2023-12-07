@@ -20,4 +20,10 @@ type AuthService interface {
 
 type RoleService interface {
 	List() (model.Roles, error)
+	Create(*model.Role) (string, error)
+}
+
+type PermissionService interface {
+	List() (model.Permissions, error)
+	Create(*model.Permission) (string, error)
 }

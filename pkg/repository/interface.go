@@ -7,6 +7,7 @@ import (
 type Repository interface {
 	User() UserRepository
 	Role() RoleRepository
+	Permission() PermissionRepository
 	Init() error
 	Close() error
 	Migrant
@@ -23,11 +24,16 @@ type UserRepository interface {
 	Update(*model.User) (*model.User, error)
 	UpdatePassword(*model.User) error
 	Delete(*model.User) error
-	//AddRole(role *model.Role, user *model.User) error
-	//DelRole(role *model.Role, user *model.User) error
 	Migrate() error
 }
 
 type RoleRepository interface {
 	List() (model.Roles, error)
+	Create(*model.Role) (*model.Role, error)
+	Migrate() error
+}
+type PermissionRepository interface {
+	List() (model.Permissions, error)
+	Create(*model.Permission) (*model.Permission, error)
+	Migrate() error
 }

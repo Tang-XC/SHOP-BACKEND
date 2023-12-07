@@ -5,10 +5,15 @@ import (
 )
 
 type repository struct {
-	user     UserRepository
-	role     RoleRepository
-	db       *gorm.DB
-	migrants []Migrant
+	user       UserRepository
+	role       RoleRepository
+	permission PermissionRepository
+	db         *gorm.DB
+	migrants   []Migrant
+}
+
+func (r *repository) Permission() PermissionRepository {
+	return r.permission
 }
 
 func (r *repository) User() UserRepository {
@@ -38,11 +43,12 @@ func (r *repository) Migrate() error {
 
 func NewRepository(db *gorm.DB) Repository {
 	r := &repository{
-		db:   db,
-		user: newUserRepository(db),
-		role: newRoleRepository(db),
+		db:         db,
+		user:       newUserRepository(db),
+		role:       newRoleRepository(db),
+		permission: newPermissionRepository(db),
 	}
-	r.migrants = getMigrants(r.user)
+	r.migrants = getMigrants(r.user, r.permission)
 	return r
 }
 

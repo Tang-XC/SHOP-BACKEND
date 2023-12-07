@@ -40,7 +40,7 @@ func (u *userService) Create(user *model.User) (string, error) {
 			return message, nil
 		}
 	}
-	return message, nil
+	return "", errors.New(message)
 }
 func (u *userService) Update(id string, new *model.User) (*model.User, error) {
 	old, err := u.GetUserById(id)

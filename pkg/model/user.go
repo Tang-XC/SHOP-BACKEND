@@ -15,6 +15,7 @@ type User struct {
 	Avatar   string `gorm:"column:avatar;" json:"avatar"`
 	Region   string `gorm:"column:region;" json:"region"`
 	Address  string `gorm:"column:address;" json:"address"`
+	Roles    []Role `gorm:"many2many:user_roles;" json:"roles"`
 }
 
 func (table User) TableName() string {
@@ -31,12 +32,16 @@ type LoginUser struct {
 type RegisterUser struct {
 	Account  string `json:"account"`
 	Password string `json:"password"`
+	Phone    string `json:"phone"`
+	Email    string `json:"email"`
 }
 
 func (c *RegisterUser) GetUser() *User {
 	return &User{
 		Account:  c.Account,
 		PassWord: c.Password,
+		Phone:    c.Phone,
+		Email:    c.Email,
 	}
 }
 
