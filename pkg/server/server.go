@@ -108,17 +108,21 @@ func New(conf *config.Config, logger *logrus.Logger) (*Server, error) {
 	}
 
 	//创建业务逻辑层
-	userService := service.NewUserService(repository.User())
+	userService := service.NewUserService(repository.User(), repository.Role())
 	authService := service.NewAuthService(repository.User())
 	roleService := service.NewRoleService(repository.Role())
 	permissionService := service.NewPermissionService(repository.Permission())
+	categoryService := service.NewCategoryService(repository.Category())
+	productService := service.NewProductService(repository.Product())
 	//创建表示层
 	userController := controller.NewUserController(userService)
 	authController := controller.NewAuthController(userService, authService)
 	roleController := controller.NewRoleController(roleService)
 	permissionController := controller.NewPermissionController(permissionService)
+	categoryController := controller.NewCategoryController(categoryService)
+	productController := controller.NewProductController(productService)
 
-	controllers := []controller.Controller{userController, authController, roleController, permissionController}
+	controllers := []controller.Controller{userController, authController, roleController, permissionController, productController, categoryController}
 	e := gin.Default()
 	e.Use(
 		middleware.CORSMiddleware(),

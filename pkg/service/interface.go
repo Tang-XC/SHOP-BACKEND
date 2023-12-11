@@ -10,8 +10,8 @@ type UserService interface {
 	Update(string, *model.User) (*model.User, error)
 	Delete(string) error
 	UpdatePassword(string, *model.UpdatedPassword) (string, error)
-	//AddRole(id, rid string) error
-	//DelRole(id, rid string) error
+	AddRole(uint, uint) error
+	RemoveRole(uint, uint) error
 }
 
 type AuthService interface {
@@ -26,4 +26,15 @@ type RoleService interface {
 type PermissionService interface {
 	List() (model.Permissions, error)
 	Create(*model.Permission) (string, error)
+}
+type ProductService interface {
+	List() (model.Products, error)
+	Create(*model.Product) (string, error)
+	Update(uint, *model.Product) (*model.Product, error)
+	Delete(uint) error
+	GetProductByID(uint) (*model.Product, error)
+}
+type CategoryService interface {
+	List() (model.Categorys, error)
+	Create(*model.Category) (string, error)
 }

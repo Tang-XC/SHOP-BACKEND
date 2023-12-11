@@ -39,6 +39,7 @@ func (u *UserController) GetUser(c *gin.Context) {
 		Avatar:  user.Avatar,
 		Address: user.Address,
 		Region:  uu.Region,
+		Roles:   user.Roles,
 	}
 	if err != nil {
 		common.FailedResponse(c, http.StatusBadRequest, err)
@@ -102,22 +103,6 @@ func (u *UserController) Delete(c *gin.Context) {
 
 	common.SuccessResponse(c, "删除成功")
 }
-
-//	func (u *UserController) AddRole(c *gin.Context) {
-//		if err := u.userService.AddRole(c.Param("id"), c.Param("rid")); err != nil {
-//			common.FailedResponse(c, http.StatusBadRequest, err)
-//			return
-//		}
-//		common.SuccessResponse(c, nil)
-//	}
-//
-//	func (u *UserController) DelRole(c *gin.Context) {
-//		if err := u.userService.DelRole(c.Param("id"), c.Param("rid")); err != nil {
-//			common.FailedResponse(c, http.StatusBadRequest, err)
-//			return
-//		}
-//		common.SuccessResponse(c, nil)
-//	}
 func (u *UserController) ResetPassword(c *gin.Context) {
 	var up = new(model.UpdatedPassword)
 	if err := c.BindJSON(up); err != nil {
@@ -150,6 +135,32 @@ func (u *UserController) UpdatePassword(c *gin.Context) {
 	}
 	common.SuccessResponse(c, result)
 }
+func (u *UserController) AddRole(c *gin.Context) {
+	AddRoleParams := new(model.AddRoleParams)
+	if err := c.BindJSON(AddRoleParams); err != nil {
+		common.FailedResponse(c, http.StatusBadRequest, err)
+		return
+	}
+	err := u.userService.AddRole(AddRoleParams.UserID, AddRoleParams.RoleID)
+	if err != nil {
+		common.FailedResponse(c, http.StatusBadRequest, err)
+		return
+	}
+	common.SuccessResponse(c, "添加成功")
+}
+func (u *UserController) RemoveRole(c *gin.Context) {
+	RemoveRoleParams := new(model.RemoveRoleParams)
+	if err := c.BindJSON(RemoveRoleParams); err != nil {
+		common.FailedResponse(c, http.StatusBadRequest, err)
+		return
+	}
+	err := u.userService.RemoveRole(RemoveRoleParams.UserID, RemoveRoleParams.RoleID)
+	if err != nil {
+		common.FailedResponse(c, http.StatusBadRequest, err)
+		return
+	}
+	common.SuccessResponse(c, "删除成功")
+}
 func (u *UserController) RegisterRoute(api *gin.RouterGroup) {
 	v1 := api.Group("/", middleware.Auth())
 	{
@@ -161,6 +172,8 @@ func (u *UserController) RegisterRoute(api *gin.RouterGroup) {
 		v1.DELETE("/user/:id", u.Delete)
 		v1.POST("/user_updatePassword/:id", u.UpdatePassword)
 		v1.POST("/user_resetPassword", u.ResetPassword)
+		v1.POST("/addRole", u.AddRole)
+		v1.POST("/removeRole", u.RemoveRole)
 	}
 }
 func (u *UserController) Name() string {

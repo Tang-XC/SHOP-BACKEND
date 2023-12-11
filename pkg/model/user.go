@@ -15,7 +15,7 @@ type User struct {
 	Avatar   string `gorm:"column:avatar;" json:"avatar"`
 	Region   string `gorm:"column:region;" json:"region"`
 	Address  string `gorm:"column:address;" json:"address"`
-	Roles    []Role `gorm:"many2many:user_roles;" json:"roles"`
+	Roles    []Role `gorm:"many2many:user_role;" json:"roles"`
 }
 
 func (table User) TableName() string {
@@ -55,6 +55,7 @@ type UpdatedUser struct {
 	Avatar  string   `json:"avatar"`
 	Region  []string `json:"region"`
 	Address string   `json:"address"`
+	Roles   []Role   `json:"roles"`
 }
 
 func (c *UpdatedUser) GetUser() *User {
@@ -72,10 +73,29 @@ func (c *UpdatedUser) GetUser() *User {
 		Phone:   c.Phone,
 		Region:  string(region),
 		Address: c.Address,
+		Roles:   c.Roles,
 	}
 }
 
 type UpdatedPassword struct {
 	OldPassword string `json:"old_password"`
 	NewPassword string `json:"new_password"`
+}
+
+type User_Role struct {
+	UserID uint `gorm:"column:user_id;primary_key" json:"user_id"`
+	RoleID uint `gorm:"column:role_id;primary_key" json:"role_id"`
+}
+
+func (table User_Role) TableName() string {
+	return "user_role"
+}
+
+type AddRoleParams struct {
+	UserID uint `json:"user_id"`
+	RoleID uint `json:"role_id"`
+}
+type RemoveRoleParams struct {
+	UserID uint `json:"user_id"`
+	RoleID uint `json:"role_id"`
 }

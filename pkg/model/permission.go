@@ -2,11 +2,11 @@ package model
 
 // 定义权限结构体
 type Permission struct {
-	ID    int64  `gorm:"column:id;primary_key" json:"id"`
-	Name  string `gorm:"column:name;" json:"name"`
-	Tag   string `gorm:"column:tag;" json:"tag"`
-	Desc  string `gorm:"column:desc;" json:"desc"`
-	Roles []Role `gorm:"many2many:role_permissions;"`
+	ID    int64   `gorm:"column:id;primary_key" json:"id"`
+	Name  string  `gorm:"column:name;" json:"name"`
+	Tag   string  `gorm:"column:tag;" json:"tag"`
+	Desc  string  `gorm:"column:desc;" json:"desc"`
+	Roles []Roles `gorm:"many2many:role_permission;" json:"roles"`
 }
 
 func (p *Permission) TableName() string {

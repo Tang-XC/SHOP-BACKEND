@@ -22,6 +22,13 @@ func (r *roleRepository) Create(role *model.Role) (*model.Role, error) {
 	}
 	return role, nil
 }
+func (r *roleRepository) GetRoleByID(id uint) (*model.Role, error) {
+	role := new(model.Role)
+	if err := r.db.Preload("Permissions").First(role, id).Error; err != nil {
+		return nil, err
+	}
+	return role, nil
+}
 func (r *roleRepository) Migrate() error {
 	return r.db.AutoMigrate(&model.Role{})
 }

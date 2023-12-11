@@ -8,6 +8,8 @@ type Repository interface {
 	User() UserRepository
 	Role() RoleRepository
 	Permission() PermissionRepository
+	Category() CategoryRepository
+	Product() ProductRepository
 	Init() error
 	Close() error
 	Migrant
@@ -24,16 +26,31 @@ type UserRepository interface {
 	Update(*model.User) (*model.User, error)
 	UpdatePassword(*model.User) error
 	Delete(*model.User) error
+	AddRole(*model.User, *model.Role) error
+	RemoveRole(*model.User, *model.Role) error
 	Migrate() error
 }
 
 type RoleRepository interface {
 	List() (model.Roles, error)
 	Create(*model.Role) (*model.Role, error)
+	GetRoleByID(uint) (*model.Role, error)
 	Migrate() error
 }
 type PermissionRepository interface {
 	List() (model.Permissions, error)
 	Create(*model.Permission) (*model.Permission, error)
+	Migrate() error
+}
+type CategoryRepository interface {
+	List() (model.Categorys, error)
+	Create(*model.Category) (*model.Category, error)
+}
+type ProductRepository interface {
+	List() (model.Products, error)
+	Create(*model.Product) (*model.Product, error)
+	Update(*model.Product) (*model.Product, error)
+	Delete(*model.Product) error
+	GetProductByID(uint) (*model.Product, error)
 	Migrate() error
 }

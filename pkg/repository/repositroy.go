@@ -8,12 +8,10 @@ type repository struct {
 	user       UserRepository
 	role       RoleRepository
 	permission PermissionRepository
+	category   CategoryRepository
+	product    ProductRepository
 	db         *gorm.DB
 	migrants   []Migrant
-}
-
-func (r *repository) Permission() PermissionRepository {
-	return r.permission
 }
 
 func (r *repository) User() UserRepository {
@@ -22,6 +20,16 @@ func (r *repository) User() UserRepository {
 func (r *repository) Role() RoleRepository {
 	return r.role
 }
+func (r *repository) Permission() PermissionRepository {
+	return r.permission
+}
+func (r *repository) Category() CategoryRepository {
+	return r.category
+}
+func (r *repository) Product() ProductRepository {
+	return r.product
+}
+
 func (r *repository) Init() error {
 	return nil
 }
@@ -47,8 +55,10 @@ func NewRepository(db *gorm.DB) Repository {
 		user:       newUserRepository(db),
 		role:       newRoleRepository(db),
 		permission: newPermissionRepository(db),
+		category:   NewCategoryRepository(db),
+		product:    newProductRepository(db),
 	}
-	r.migrants = getMigrants(r.user, r.permission)
+	r.migrants = getMigrants(r.user, r.permission, r.role, r.product, r.category)
 	return r
 }
 
