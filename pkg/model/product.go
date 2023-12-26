@@ -1,14 +1,14 @@
 package model
 
 type Product struct {
-	ID       uint      `gorm:"primarykey;column:id" json:"id"`
-	Name     string    `gorm:"column:name" json:"name"`
-	Price    int       `gorm:"column:price" json:"price"`
-	Image    string    `gorm:"column:image" json:"image"`
-	Desc     string    `gorm:"column:desc" json:"desc"`
-	Stock    int       `gorm:"column:stock" json:"stock"`
-	Category Categorys `gorm:"many2many:product_category;" json:"category"`
-	Specs    struct{}  `gorm:"embedded" json:"specs"`
+	ID       uint           `gorm:";primary_key;column:id" json:"id"`
+	Name     string         `gorm:"column:name" json:"name"`
+	Price    int            `gorm:"column:price" json:"price"`
+	Image    string         `gorm:"column:image" json:"image"`
+	Desc     string         `gorm:"column:desc" json:"desc"`
+	Stock    int            `gorm:"column:stock" json:"stock"`
+	Category uint           `gorm:"column:category" json:"category"`
+	Specs    Specifications `gorm:"embedded" json:"specs"`
 }
 
 func (p Product) TableName() string {
@@ -36,16 +36,18 @@ type AddProduct struct {
 	Image    string         `json:"image" `
 	Desc     string         `json:"desc"`
 	Stock    int            `json:"stock"`
-	Category int            `json:"category"`
+	Category uint           `json:"category"`
 	Specs    Specifications `json:"specs"`
 }
 
 func (a AddProduct) GetProduct() *Product {
 	return &Product{
-		Name:  a.Name,
-		Price: a.Price,
-		Image: a.Image,
-		Desc:  a.Desc,
-		Stock: a.Stock,
+		Name:     a.Name,
+		Price:    a.Price,
+		Image:    a.Image,
+		Desc:     a.Desc,
+		Stock:    a.Stock,
+		Category: a.Category,
+		Specs:    a.Specs,
 	}
 }

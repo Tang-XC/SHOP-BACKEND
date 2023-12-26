@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"gorm.io/gorm"
 	"shop/pkg/model"
 )
@@ -17,6 +18,7 @@ func (u *productRepository) List() (model.Products, error) {
 	return products, nil
 }
 func (u *productRepository) Create(product *model.Product) (*model.Product, error) {
+	fmt.Println(product)
 	if err := u.db.Create(product).Error; err != nil {
 		return nil, err
 	}

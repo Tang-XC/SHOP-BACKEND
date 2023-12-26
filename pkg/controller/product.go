@@ -1,13 +1,13 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"shop/pkg/common"
 	"shop/pkg/middleware"
 	"shop/pkg/model"
 	"shop/pkg/service"
+	"strconv"
 )
 
 type ProductController struct {
@@ -28,14 +28,27 @@ func (u *ProductController) Create(c *gin.Context) {
 		common.FailedResponse(c, http.StatusBadRequest, err)
 		return
 	}
-	product := addProduct.GetProduct()
-	fmt.Println(product)
+	message, err := u.productService.Create(addProduct)
+	if err != nil {
+		common.FailedResponse(c, http.StatusBadRequest, err)
+		return
+	}
+	common.SuccessResponse(c, message)
 }
 func (u *ProductController) Update(c *gin.Context) {
 
 }
 func (u *ProductController) Delete(c *gin.Context) {
-
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		common.FailedResponse(c, http.StatusBadRequest, err)
+		return
+	}
+	if err := u.productService.Delete(uint(id)); err != nil {
+		common.FailedResponse(c, http.StatusBadRequest, err)
+		return
+	}
+	common.SuccessResponse(c, "删除成功")
 }
 func (u *ProductController) GetProductByID(c *gin.Context) {
 

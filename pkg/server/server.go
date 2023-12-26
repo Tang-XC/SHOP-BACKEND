@@ -113,7 +113,7 @@ func New(conf *config.Config, logger *logrus.Logger) (*Server, error) {
 	roleService := service.NewRoleService(repository.Role())
 	permissionService := service.NewPermissionService(repository.Permission())
 	categoryService := service.NewCategoryService(repository.Category())
-	productService := service.NewProductService(repository.Product())
+	productService := service.NewProductService(repository.Product(), repository.Category())
 	//创建表示层
 	userController := controller.NewUserController(userService)
 	authController := controller.NewAuthController(userService, authService)

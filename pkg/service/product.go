@@ -6,18 +6,25 @@ import (
 )
 
 type productService struct {
-	productRepository repository.ProductRepository
+	productRepository  repository.ProductRepository
+	categoryRepository repository.CategoryRepository
 }
 
 func (p *productService) List() (model.Products, error) {
 	return p.productRepository.List()
 }
-func (p *productService) Create(product *model.Product) (string, error) {
+func (p *productService) Create(addProduct *model.AddProduct) (string, error) {
 	message := "创建成功"
-	_, err := p.productRepository.Create(product)
-	if err != nil {
+	//查询分类是否存在
+	if _, err := p.categoryRepository.GetCategoryByID(addProduct.Category); err != nil {
 		return "", err
 	}
+	product := addProduct.GetProduct()
+	//创建商品
+	if _, err := p.productRepository.Create(product); err != nil {
+		return "", err
+	}
+
 	return message, nil
 }
 func (p *productService) Update(id uint, product *model.Product) (*model.Product, error) {
@@ -37,8 +44,9 @@ func (p *productService) Delete(id uint) error {
 func (p *productService) GetProductByID(id uint) (*model.Product, error) {
 	return p.productRepository.GetProductByID(id)
 }
-func NewProductService(productRepository repository.ProductRepository) ProductService {
+func NewProductService(productRepository repository.ProductRepository, categoryRepository repository.CategoryRepository) ProductService {
 	return &productService{
-		productRepository: productRepository,
+		productRepository:  productRepository,
+		categoryRepository: categoryRepository,
 	}
 }

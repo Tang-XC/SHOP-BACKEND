@@ -45,6 +45,8 @@ type PermissionRepository interface {
 type CategoryRepository interface {
 	List() (model.Categorys, error)
 	Create(*model.Category) (*model.Category, error)
+	GetCategoryByID(uint) (*model.Category, error)
+	Migrate() error
 }
 type ProductRepository interface {
 	List() (model.Products, error)

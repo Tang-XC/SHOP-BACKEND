@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"shop/pkg/model"
 	"shop/pkg/repository"
 )
@@ -15,6 +16,7 @@ func (c *categoryService) List() (model.Categorys, error) {
 
 // Create(*model.Category) (string, error)
 func (c *categoryService) Create(category *model.Category) (string, error) {
+	fmt.Println(category)
 	category, err := c.categoryRepository.Create(category)
 	if err != nil {
 		return "", err

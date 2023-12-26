@@ -29,7 +29,7 @@ type PermissionService interface {
 }
 type ProductService interface {
 	List() (model.Products, error)
-	Create(*model.Product) (string, error)
+	Create(product *model.AddProduct) (string, error)
 	Update(uint, *model.Product) (*model.Product, error)
 	Delete(uint) error
 	GetProductByID(uint) (*model.Product, error)
