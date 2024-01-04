@@ -21,9 +21,17 @@ type DBConfig struct {
 	User     string `yaml:"user"`
 	Password string `yaml:"password"`
 }
+type MinioConfig struct {
+	Endpoint        string `yaml:"endpoint"`
+	AccessKeyID     string `yaml:"accessKeyID"`
+	SecretAccessKey string `yaml:"secretAccessKey"'`
+	Secure          bool   `yaml:"secure"`
+	BucketName      string `yaml:"bucketName"`
+}
 type Config struct {
 	Server ServerConfig `yaml:"server"`
 	DB     DBConfig     `yaml:"db"`
+	Minio  MinioConfig  `yaml:"minio"`
 }
 
 func Parse(appConfig string) (*Config, error) {

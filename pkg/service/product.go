@@ -24,7 +24,6 @@ func (p *productService) Create(addProduct *model.AddProduct) (string, error) {
 	if _, err := p.productRepository.Create(product); err != nil {
 		return "", err
 	}
-
 	return message, nil
 }
 func (p *productService) Update(id uint, product *model.Product) (*model.Product, error) {

@@ -10,3 +10,9 @@ db:
   name: "shop"
   user: "root"
   password: "123456"
+minio:
+  endpoint: "127.0.0.1:9000"
+  accessKeyID: "yAeQrPPMLyKR5x2oaOCK"
+  secretAccessKey: "y9DfxDbdzDESOmVT3I6g3YtcPySsfDu9SrD3liRg"
+  secure: false
+  bucketName: "shop"

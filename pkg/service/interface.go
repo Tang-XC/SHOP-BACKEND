@@ -1,6 +1,9 @@
 package service
 
-import "shop/pkg/model"
+import (
+	"mime/multipart"
+	"shop/pkg/model"
+)
 
 type UserService interface {
 	List() (model.Users, error)
@@ -37,4 +40,7 @@ type ProductService interface {
 type CategoryService interface {
 	List() (model.Categorys, error)
 	Create(*model.Category) (string, error)
+}
+type FileService interface {
+	UploadImages(files []*multipart.FileHeader, token string) ([]model.FileResponse, error)
 }

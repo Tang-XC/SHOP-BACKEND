@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"shop/pkg/common"
 	utils "shop/pkg/utils/token"
@@ -11,7 +10,6 @@ func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//从header中获取token
 		token := c.Request.Header.Get("Authorization")
-		fmt.Println(token)
 		//验证token
 		_, err := utils.ParseToken(token)
 		if err != nil {

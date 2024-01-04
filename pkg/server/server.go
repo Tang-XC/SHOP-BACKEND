@@ -91,10 +91,14 @@ func (s *Server) getRoutes() []string {
 // 创建服务
 func New(conf *config.Config, logger *logrus.Logger) (*Server, error) {
 	//建立数据库连接
-	db, err := database.NewDB(&conf.DB)
+	db, err := database.NewMySQLDB(&conf.DB)
 	if err != nil {
 		return nil, err
 	}
+	//建立minio连接
+	minioClient, err := database.NewMinio(&conf.Minio)
+	//创建minio存储桶
+	common.CreateBucket(conf.Minio.BucketName, minioClient)
 
 	//创建数据访问层
 	repository := repository.NewRepository(db)
@@ -114,6 +118,7 @@ func New(conf *config.Config, logger *logrus.Logger) (*Server, error) {
 	permissionService := service.NewPermissionService(repository.Permission())
 	categoryService := service.NewCategoryService(repository.Category())
 	productService := service.NewProductService(repository.Product(), repository.Category())
+	fileService := service.NewFileService(minioClient, conf.Minio, repository.User())
 	//创建表示层
 	userController := controller.NewUserController(userService)
 	authController := controller.NewAuthController(userService, authService)
@@ -121,8 +126,9 @@ func New(conf *config.Config, logger *logrus.Logger) (*Server, error) {
 	permissionController := controller.NewPermissionController(permissionService)
 	categoryController := controller.NewCategoryController(categoryService)
 	productController := controller.NewProductController(productService)
+	fileController := controller.NewFileController(fileService)
 
-	controllers := []controller.Controller{userController, authController, roleController, permissionController, productController, categoryController}
+	controllers := []controller.Controller{userController, authController, roleController, permissionController, productController, categoryController, fileController}
 	e := gin.Default()
 	e.Use(
 		middleware.CORSMiddleware(),
