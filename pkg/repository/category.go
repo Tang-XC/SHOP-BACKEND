@@ -24,6 +24,9 @@ func (c *categoryRepository) Create(category *model.Category) (*model.Category, 
 	}
 	return category, nil
 }
+func (c *categoryRepository) Delete(id uint) error {
+	return c.db.Delete(&model.Category{}, id).Error
+}
 func (c *categoryRepository) GetCategoryByID(id uint) (*model.Category, error) {
 	var category model.Category
 	err := c.db.First(&category, id).Error
@@ -36,6 +39,6 @@ func (c *categoryRepository) Migrate() error {
 	return c.db.AutoMigrate(&model.Category{})
 }
 
-func NewCategoryRepository(db *gorm.DB) CategoryRepository {
+func newCategoryRepository(db *gorm.DB) CategoryRepository {
 	return &categoryRepository{db}
 }

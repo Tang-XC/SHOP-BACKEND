@@ -10,6 +10,7 @@ type repository struct {
 	permission PermissionRepository
 	category   CategoryRepository
 	product    ProductRepository
+	file       FileRepository
 	db         *gorm.DB
 	migrants   []Migrant
 }
@@ -29,7 +30,9 @@ func (r *repository) Category() CategoryRepository {
 func (r *repository) Product() ProductRepository {
 	return r.product
 }
-
+func (r *repository) File() FileRepository {
+	return r.file
+}
 func (r *repository) Init() error {
 	return nil
 }
@@ -55,10 +58,11 @@ func NewRepository(db *gorm.DB) Repository {
 		user:       newUserRepository(db),
 		role:       newRoleRepository(db),
 		permission: newPermissionRepository(db),
-		category:   NewCategoryRepository(db),
+		category:   newCategoryRepository(db),
 		product:    newProductRepository(db),
+		file:       newFileRepository(db),
 	}
-	r.migrants = getMigrants(r.user, r.permission, r.role, r.product, r.category)
+	r.migrants = getMigrants(r.user, r.permission, r.role, r.product, r.category, r.file)
 	return r
 }
 

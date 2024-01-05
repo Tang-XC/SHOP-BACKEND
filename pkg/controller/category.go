@@ -7,6 +7,7 @@ import (
 	"shop/pkg/middleware"
 	"shop/pkg/model"
 	"shop/pkg/service"
+	"strconv"
 )
 
 type CategoryController struct {
@@ -35,12 +36,26 @@ func (cg *CategoryController) Create(c *gin.Context) {
 	}
 	common.SuccessResponse(c, message)
 }
+func (cg *CategoryController) Delete(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		common.FailedResponse(c, http.StatusBadRequest, err)
+		return
+	}
+	if err := cg.categoryService.Delete(uint(id)); err != nil {
+		common.FailedResponse(c, http.StatusBadRequest, err)
+		return
+	}
+	common.SuccessResponse(c, "删除成功")
+
+}
 
 func (u *CategoryController) RegisterRoute(api *gin.RouterGroup) {
 	v1 := api.Group("/", middleware.Auth())
 	{
 		v1.GET("/categories", u.List)
 		v1.POST("/category", u.Create)
+		v1.DELETE("/category/:id", u.Delete)
 	}
 }
 

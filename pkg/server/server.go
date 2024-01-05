@@ -117,18 +117,19 @@ func New(conf *config.Config, logger *logrus.Logger) (*Server, error) {
 	roleService := service.NewRoleService(repository.Role())
 	permissionService := service.NewPermissionService(repository.Permission())
 	categoryService := service.NewCategoryService(repository.Category())
-	productService := service.NewProductService(repository.Product(), repository.Category())
-	fileService := service.NewFileService(minioClient, conf.Minio, repository.User())
+	productService := service.NewProductService(repository.Product(), repository.Category(), repository.User())
+	uploadService := service.NewUploadService(minioClient, conf.Minio, repository.User())
+	fileService := service.NewFileService(repository.File())
 	//创建表示层
 	userController := controller.NewUserController(userService)
 	authController := controller.NewAuthController(userService, authService)
 	roleController := controller.NewRoleController(roleService)
 	permissionController := controller.NewPermissionController(permissionService)
 	categoryController := controller.NewCategoryController(categoryService)
-	productController := controller.NewProductController(productService)
+	productController := controller.NewProductController(productService, userService)
+	uploadController := controller.NewUploadController(uploadService)
 	fileController := controller.NewFileController(fileService)
-
-	controllers := []controller.Controller{userController, authController, roleController, permissionController, productController, categoryController, fileController}
+	controllers := []controller.Controller{userController, authController, roleController, permissionController, productController, categoryController, uploadController, fileController}
 	e := gin.Default()
 	e.Use(
 		middleware.CORSMiddleware(),

@@ -10,6 +10,7 @@ type Repository interface {
 	Permission() PermissionRepository
 	Category() CategoryRepository
 	Product() ProductRepository
+	File() FileRepository
 	Init() error
 	Close() error
 	Migrant
@@ -45,14 +46,22 @@ type PermissionRepository interface {
 type CategoryRepository interface {
 	List() (model.Categorys, error)
 	Create(*model.Category) (*model.Category, error)
+	Delete(id uint) error
 	GetCategoryByID(uint) (*model.Category, error)
 	Migrate() error
 }
 type ProductRepository interface {
-	List() (model.Products, error)
+	List(page int, size int, category int) (model.ProductsResponse, error)
 	Create(*model.Product) (*model.Product, error)
 	Update(*model.Product) (*model.Product, error)
 	Delete(*model.Product) error
 	GetProductByID(uint) (*model.Product, error)
+	Migrate() error
+}
+type FileRepository interface {
+	List() (model.Files, error)
+	Create(*model.File) (*model.File, error)
+	Delete(*model.File) error
+	GetFileByID(uint) (*model.File, error)
 	Migrate() error
 }

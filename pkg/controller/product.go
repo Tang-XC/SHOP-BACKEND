@@ -12,10 +12,14 @@ import (
 
 type ProductController struct {
 	productService service.ProductService
+	userService    service.UserService
 }
 
 func (u *ProductController) List(c *gin.Context) {
-	products, err := u.productService.List()
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
+	size, _ := strconv.Atoi(c.DefaultQuery("size", "10"))
+	category, _ := strconv.Atoi(c.DefaultQuery("category", "0"))
+	products, err := u.productService.List(page, size, category)
 	if err != nil {
 		common.FailedResponse(c, http.StatusBadRequest, err)
 		return
@@ -23,12 +27,20 @@ func (u *ProductController) List(c *gin.Context) {
 	common.SuccessResponse(c, products)
 }
 func (u *ProductController) Create(c *gin.Context) {
+	//获取参数
 	var addProduct = new(model.AddProduct)
 	if err := c.ShouldBindJSON(&addProduct); err != nil {
 		common.FailedResponse(c, http.StatusBadRequest, err)
 		return
 	}
-	message, err := u.productService.Create(addProduct)
+	//获取用户信息
+	token := c.GetHeader("Authorization")
+	user, err := u.userService.GetUser(token)
+	if err != nil {
+		common.FailedResponse(c, http.StatusBadRequest, err)
+		return
+	}
+	message, err := u.productService.Create(addProduct, user)
 	if err != nil {
 		common.FailedResponse(c, http.StatusBadRequest, err)
 		return
@@ -66,6 +78,6 @@ func (u *ProductController) RegisterRoute(api *gin.RouterGroup) {
 func (u *ProductController) Name() string {
 	return "Product"
 }
-func NewProductController(productService service.ProductService) *ProductController {
-	return &ProductController{productService: productService}
+func NewProductController(productService service.ProductService, userService service.UserService) *ProductController {
+	return &ProductController{productService: productService, userService: userService}
 }

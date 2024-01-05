@@ -21,6 +21,9 @@ func (c *categoryService) Create(category *model.Category) (string, error) {
 	}
 	return "添加成功", nil
 }
+func (c *categoryService) Delete(id uint) error {
+	return c.categoryRepository.Delete(id)
+}
 
 func NewCategoryService(categoryRepository repository.CategoryRepository) CategoryService {
 	return &categoryService{categoryRepository}

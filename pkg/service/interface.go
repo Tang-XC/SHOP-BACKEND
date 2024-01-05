@@ -31,8 +31,8 @@ type PermissionService interface {
 	Create(*model.Permission) (string, error)
 }
 type ProductService interface {
-	List() (model.Products, error)
-	Create(product *model.AddProduct) (string, error)
+	List(page int, size int, category int) (model.ProductsResponse, error)
+	Create(product *model.AddProduct, user *model.User) (string, error)
 	Update(uint, *model.Product) (*model.Product, error)
 	Delete(uint) error
 	GetProductByID(uint) (*model.Product, error)
@@ -40,7 +40,14 @@ type ProductService interface {
 type CategoryService interface {
 	List() (model.Categorys, error)
 	Create(*model.Category) (string, error)
+	Delete(uint) error
+}
+type UploadService interface {
+	UploadImages(files []*multipart.FileHeader, token string) ([]model.FileResponse, error)
 }
 type FileService interface {
-	UploadImages(files []*multipart.FileHeader, token string) ([]model.FileResponse, error)
+	List() (model.Files, error)
+	Create(file *model.File) (*model.File, error)
+	Delete(file *model.File) error
+	GetFileByID(uint) (*model.File, error)
 }
