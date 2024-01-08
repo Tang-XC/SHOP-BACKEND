@@ -56,6 +56,7 @@ type ProductRepository interface {
 	Update(*model.Product) (*model.Product, error)
 	Delete(*model.Product) error
 	GetProductByID(uint) (*model.Product, error)
+	AddFile(*model.Product, *model.File) error
 	Migrate() error
 }
 type FileRepository interface {

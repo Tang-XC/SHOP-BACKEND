@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"shop/pkg/common"
 	"shop/pkg/middleware"
-	"shop/pkg/model"
 	"shop/pkg/service"
 	"strconv"
 )
@@ -25,18 +24,15 @@ func (f FileController) List(c *gin.Context) {
 	common.SuccessResponse(c, files)
 }
 func (f FileController) Create(c *gin.Context) {
-	fileAdd := new(model.AddFile)
-	if err := c.BindJSON(fileAdd); err != nil {
-		common.FailedResponse(c, http.StatusBadRequest, err)
-		return
-	}
-	file := fileAdd.GetFile()
-	_, err := f.fileService.Create(file)
+	form, _ := c.MultipartForm()
+	files := form.File["files"]
+	token := c.GetHeader("Authorization")
+	filesResponse, err := f.fileService.Create(files, token)
 	if err != nil {
 		common.FailedResponse(c, http.StatusBadRequest, err)
 		return
 	}
-	common.SuccessResponse(c, "创建成功")
+	common.SuccessResponse(c, filesResponse)
 }
 func (f FileController) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))

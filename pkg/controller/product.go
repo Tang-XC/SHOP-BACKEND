@@ -63,7 +63,17 @@ func (u *ProductController) Delete(c *gin.Context) {
 	common.SuccessResponse(c, "删除成功")
 }
 func (u *ProductController) GetProductByID(c *gin.Context) {
-
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		common.FailedResponse(c, http.StatusBadRequest, err)
+		return
+	}
+	product, err := u.productService.GetProductByID(uint(id))
+	if err != nil {
+		common.FailedResponse(c, http.StatusBadRequest, err)
+		return
+	}
+	common.SuccessResponse(c, product)
 }
 func (u *ProductController) RegisterRoute(api *gin.RouterGroup) {
 	v1 := api.Group("/", middleware.Auth())

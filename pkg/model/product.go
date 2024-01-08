@@ -52,6 +52,7 @@ type AddProduct struct {
 	Specs     Specifications `json:"specs"`
 	CreatedAt time.Time      `json:"created_at"`
 	Owner     uint           `json:"owner"`
+	Files     []uint         `json:"files"`
 }
 
 func (a AddProduct) GetProduct() *Product {

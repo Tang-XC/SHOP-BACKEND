@@ -114,8 +114,8 @@ func CreateFolder(bucketName string, folderName string, client *minio.Client) er
 }
 
 // 删除文件
-func DeleteFile(bucketName string, fileName string, client *minio.Client) error {
-	err := client.RemoveObject(context.Background(), bucketName, fileName, minio.RemoveObjectOptions{})
+func DeleteFile(bucketName string, filePath string, client *minio.Client) error {
+	err := client.RemoveObject(context.Background(), bucketName, filePath, minio.RemoveObjectOptions{})
 	if err != nil {
 		return err
 	}

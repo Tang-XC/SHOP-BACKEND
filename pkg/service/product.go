@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"shop/pkg/model"
 	"shop/pkg/repository"
 	"time"
@@ -10,6 +11,8 @@ type productService struct {
 	productRepository  repository.ProductRepository
 	categoryRepository repository.CategoryRepository
 	userRepository     repository.UserRepository
+	fileRepository     repository.FileRepository
+	fileService        FileService
 }
 
 func (p *productService) List(page int, size int, category int) (model.ProductsResponse, error) {
@@ -24,9 +27,19 @@ func (p *productService) Create(addProduct *model.AddProduct, user *model.User) 
 	addProduct.CreatedAt = time.Now()
 	addProduct.Owner = user.ID
 	product := addProduct.GetProduct()
+
 	//创建商品
-	if _, err := p.productRepository.Create(product); err != nil {
+	productResponse, err := p.productRepository.Create(product)
+	if err != nil {
 		return "", err
+	}
+
+	//添加文件
+	fmt.Println()
+	for _, file := range addProduct.Files {
+		if err := p.AddFile(productResponse.ID, file); err != nil {
+			return "", err
+		}
 	}
 	return message, nil
 }
@@ -39,31 +52,45 @@ func (p *productService) Update(id uint, product *model.Product) (*model.Product
 	return p.productRepository.Update(product)
 }
 func (p *productService) Delete(id uint) error {
-	product := &model.Product{
-		ID: id,
+	product, err := p.productRepository.GetProductByID(id)
+	files := product.Files
+	for _, file := range product.Files {
+		files = append(files, file)
 	}
-	//查找产品
-	//product, err := p.productRepository.GetProductByID(id)
-	//if err != nil {
-	//	return err
-	//}
-	//查找用户
-	//user, err := p.userRepository.GetUserByID(product.Owner)
-	//if err != nil {
-	//	return err
-	//}
-	//删除相关文件
-	//bucketName := user.Name + user.Account + strconv.Itoa(int(user.ID))
-	//common.DeleteFile(bucketName,)
-	return p.productRepository.Delete(product)
+	if err != nil {
+		return err
+	}
+
+	if err := p.productRepository.Delete(product); err != nil {
+		return err
+	}
+	for _, file := range files {
+		if err := p.fileService.Delete(&file); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 func (p *productService) GetProductByID(id uint) (*model.Product, error) {
 	return p.productRepository.GetProductByID(id)
 }
-func NewProductService(productRepository repository.ProductRepository, categoryRepository repository.CategoryRepository, userRepository repository.UserRepository) ProductService {
+func (p *productService) AddFile(productId uint, fileId uint) error {
+	product, err := p.GetProductByID(productId)
+	if err != nil {
+		return err
+	}
+	file, err := p.fileRepository.GetFileByID(fileId)
+	if err != nil {
+		return err
+	}
+	return p.productRepository.AddFile(product, file)
+}
+func NewProductService(productRepository repository.ProductRepository, categoryRepository repository.CategoryRepository, userRepository repository.UserRepository, fileRepository repository.FileRepository, fileService FileService) ProductService {
 	return &productService{
 		productRepository:  productRepository,
 		categoryRepository: categoryRepository,
 		userRepository:     userRepository,
+		fileRepository:     fileRepository,
+		fileService:        fileService,
 	}
 }

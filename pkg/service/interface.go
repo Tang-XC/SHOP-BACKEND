@@ -36,6 +36,7 @@ type ProductService interface {
 	Update(uint, *model.Product) (*model.Product, error)
 	Delete(uint) error
 	GetProductByID(uint) (*model.Product, error)
+	AddFile(uint, uint) error
 }
 type CategoryService interface {
 	List() (model.Categorys, error)
@@ -47,7 +48,7 @@ type UploadService interface {
 }
 type FileService interface {
 	List() (model.Files, error)
-	Create(file *model.File) (*model.File, error)
+	Create(files []*multipart.FileHeader, token string) (model.Files, error)
 	Delete(file *model.File) error
 	GetFileByID(uint) (*model.File, error)
 }
