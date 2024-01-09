@@ -9,7 +9,7 @@ type productRepository struct {
 	db *gorm.DB
 }
 
-func (u *productRepository) List(page int, size int, category int) (model.ProductsResponse, error) {
+func (u *productRepository) List(page int, size int, category int, keywords string) (model.ProductsResponse, error) {
 	offset := page * size
 	products := make(model.Products, 0)
 	var total int64 = 0
@@ -17,9 +17,11 @@ func (u *productRepository) List(page int, size int, category int) (model.Produc
 		Total:    total,
 		Products: products,
 	}
+	//根据关键字查询
+
 	//根据分类查询
 	if category != 0 {
-		if err := u.db.Where("category = ?", category).Offset(offset).Limit(size).Preload("Files").Find(&products).Error; err != nil {
+		if err := u.db.Order("created_at desc").Where("category = ?", category).Offset(offset).Limit(size).Preload("Files").Find(&products).Error; err != nil {
 			return result, err
 		}
 		if err := u.db.Model(&model.Product{}).Where("category = ?", category).Count(&total).Error; err != nil {
@@ -55,6 +57,12 @@ func (u *productRepository) Delete(product *model.Product) error {
 		return err
 	}
 	if err := u.db.Delete(product).Error; err != nil {
+		return err
+	}
+	return nil
+}
+func (u *productRepository) RemoveFileRelation(product *model.Product) error {
+	if err := u.db.Model(&product).Association("Files").Clear(); err != nil {
 		return err
 	}
 	return nil

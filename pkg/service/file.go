@@ -60,7 +60,7 @@ func (f fileService) Create(files []*multipart.FileHeader, token string) (model.
 		fileInfo, err := common.FileInfo(bucketName, path, f.minioClient)
 
 		//获取文件的url
-		result, err := common.FileURL(bucketName, path, f.minioClient)
+		result := common.FileURL(bucketName, path, f.minioClient)
 		if err != nil {
 			return filesData, err
 		}

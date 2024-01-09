@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"shop/pkg/model"
 	"shop/pkg/repository"
 	"time"
@@ -15,8 +14,8 @@ type productService struct {
 	fileService        FileService
 }
 
-func (p *productService) List(page int, size int, category int) (model.ProductsResponse, error) {
-	return p.productRepository.List(page, size, category)
+func (p *productService) List(page int, size int, category int, keywords string) (model.ProductsResponse, error) {
+	return p.productRepository.List(page, size, category, keywords)
 }
 func (p *productService) Create(addProduct *model.AddProduct, user *model.User) (string, error) {
 	message := "创建成功"
@@ -35,7 +34,6 @@ func (p *productService) Create(addProduct *model.AddProduct, user *model.User) 
 	}
 
 	//添加文件
-	fmt.Println()
 	for _, file := range addProduct.Files {
 		if err := p.AddFile(productResponse.ID, file); err != nil {
 			return "", err
@@ -43,13 +41,30 @@ func (p *productService) Create(addProduct *model.AddProduct, user *model.User) 
 	}
 	return message, nil
 }
-func (p *productService) Update(id uint, product *model.Product) (*model.Product, error) {
+func (p *productService) Update(id uint, updateProduct *model.UpdateProduct) (string, error) {
+	message := "更新成功"
+	//查询分类是否存在
 	old, err := p.GetProductByID(id)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
+	//删除旧文件
+	p.productRepository.RemoveFileRelation(old)
+	//添加新文件
+	for _, file := range updateProduct.Files {
+		if err := p.AddFile(id, file); err != nil {
+			return "", err
+		}
+	}
+	//更新商品
+	product := updateProduct.GetProduct()
 	product.ID = old.ID
-	return p.productRepository.Update(product)
+	product.CreatedAt = old.CreatedAt
+	product, err = p.productRepository.Update(product)
+	if err != nil {
+		return "", err
+	}
+	return message, nil
 }
 func (p *productService) Delete(id uint) error {
 	product, err := p.productRepository.GetProductByID(id)

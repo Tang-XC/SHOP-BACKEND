@@ -51,10 +51,11 @@ type CategoryRepository interface {
 	Migrate() error
 }
 type ProductRepository interface {
-	List(page int, size int, category int) (model.ProductsResponse, error)
+	List(page int, size int, category int, keywords string) (model.ProductsResponse, error)
 	Create(*model.Product) (*model.Product, error)
 	Update(*model.Product) (*model.Product, error)
 	Delete(*model.Product) error
+	RemoveFileRelation(*model.Product) error
 	GetProductByID(uint) (*model.Product, error)
 	AddFile(*model.Product, *model.File) error
 	Migrate() error

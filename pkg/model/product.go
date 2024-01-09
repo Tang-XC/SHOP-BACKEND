@@ -25,7 +25,6 @@ type Products []Product
 type ProductsResponse struct {
 	Total    int64    `json:"total"`
 	Products Products `json:"products"`
-	Category Category `json:"category"`
 }
 
 type Specifications struct {
@@ -67,5 +66,34 @@ func (a AddProduct) GetProduct() *Product {
 		Specs:     a.Specs,
 		CreatedAt: a.CreatedAt.Unix(),
 		Owner:     a.Owner,
+	}
+}
+
+type UpdateProduct struct {
+	ID       uint           `json:"id"`
+	Name     string         `json:"name" `
+	Price    int            `json:"price" `
+	Brand    string         `json:"brand"`
+	Image    string         `json:"image" `
+	Desc     string         `json:"desc"`
+	Stock    int            `json:"stock"`
+	Category uint           `json:"category"`
+	Specs    Specifications `json:"specs"`
+	Owner    uint           `json:"owner"`
+	Files    []uint         `json:"files"`
+}
+
+func (u UpdateProduct) GetProduct() *Product {
+	return &Product{
+		ID:       u.ID,
+		Name:     u.Name,
+		Price:    u.Price,
+		Brand:    u.Brand,
+		Image:    u.Image,
+		Desc:     u.Desc,
+		Stock:    u.Stock,
+		Category: u.Category,
+		Specs:    u.Specs,
+		Owner:    u.Owner,
 	}
 }

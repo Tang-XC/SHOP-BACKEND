@@ -7,9 +7,7 @@ import (
 	"github.com/minio/minio-go/v7"
 	"io"
 	"net/http"
-	"net/url"
 	"reflect"
-	"time"
 )
 
 func WrapFunc(f interface{}, args ...interface{}) gin.HandlerFunc {
@@ -55,12 +53,11 @@ func CreateBucket(bucketName string, client *minio.Client) error {
 	if err := client.MakeBucket(context.Background(), bucketName, minio.MakeBucketOptions{Region: "cn-south-1", ObjectLocking: false}); err != nil {
 		exists, _ := client.BucketExists(context.Background(), bucketName)
 		if exists {
-			fmt.Println("桶已创建!")
 			return nil
 		}
 		return err
 	}
-	fmt.Println("桶创建成功!")
+	client.SetBucketPolicy(context.Background(), bucketName, `{"Version":"2012-10-17","Statement":[{"Action":["s3:GetObject"],"Effect":"Allow","Principal":"*","Resource":["arn:aws:s3:::`+bucketName+`/*"],"Sid":""}]}`)
 	return nil
 }
 func FileUploader(bucketName string, fileName string, reader io.Reader, size int64, client *minio.Client) (string, error) {
@@ -74,15 +71,8 @@ func FileUploader(bucketName string, fileName string, reader io.Reader, size int
 }
 
 // 获取文件访问链接
-func FileURL(bucketName string, fileName string, client *minio.Client) (string, error) {
-	//获取文件访问链接
-	reqParams := make(url.Values)
-	reqParams.Set("response-content-disposition", "attachment; filename=\""+fileName+"\"")
-	presignedURL, err := client.PresignedGetObject(context.Background(), bucketName, fileName, time.Second*24*60*60, reqParams)
-	if err != nil {
-		return "", err
-	}
-	return presignedURL.String(), nil
+func FileURL(bucketName string, fileName string, client *minio.Client) string {
+	return client.EndpointURL().String() + "/" + bucketName + "/" + fileName
 }
 
 // 获取文件的信息
@@ -105,7 +95,6 @@ func CreateFolder(bucketName string, folderName string, client *minio.Client) er
 			if err != nil {
 				return err
 			}
-			fmt.Println("文件夹创建成功!")
 			return nil
 		}
 		return err
@@ -119,6 +108,5 @@ func DeleteFile(bucketName string, filePath string, client *minio.Client) error 
 	if err != nil {
 		return err
 	}
-	fmt.Println("文件删除成功!")
 	return nil
 }

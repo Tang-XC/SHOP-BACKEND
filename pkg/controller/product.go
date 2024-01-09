@@ -19,7 +19,8 @@ func (u *ProductController) List(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "0"))
 	size, _ := strconv.Atoi(c.DefaultQuery("size", "10"))
 	category, _ := strconv.Atoi(c.DefaultQuery("category", "0"))
-	products, err := u.productService.List(page, size, category)
+	keywords := c.DefaultQuery("keywords", "")
+	products, err := u.productService.List(page, size, category, keywords)
 	if err != nil {
 		common.FailedResponse(c, http.StatusBadRequest, err)
 		return
@@ -48,7 +49,25 @@ func (u *ProductController) Create(c *gin.Context) {
 	common.SuccessResponse(c, message)
 }
 func (u *ProductController) Update(c *gin.Context) {
-
+	//获取id
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		common.FailedResponse(c, http.StatusBadRequest, err)
+		return
+	}
+	//获取参数
+	var updateProduct = new(model.UpdateProduct)
+	if err := c.ShouldBindJSON(&updateProduct); err != nil {
+		common.FailedResponse(c, http.StatusBadRequest, err)
+		return
+	}
+	//修改
+	message, err := u.productService.Update(uint(id), updateProduct)
+	if err != nil {
+		common.FailedResponse(c, http.StatusBadRequest, err)
+		return
+	}
+	common.SuccessResponse(c, message)
 }
 func (u *ProductController) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))

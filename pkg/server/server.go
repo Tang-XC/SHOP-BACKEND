@@ -119,7 +119,6 @@ func New(conf *config.Config, logger *logrus.Logger) (*Server, error) {
 	categoryService := service.NewCategoryService(repository.Category())
 	fileService := service.NewFileService(repository.File(), minioClient, conf.Minio, repository.User())
 	productService := service.NewProductService(repository.Product(), repository.Category(), repository.User(), repository.File(), fileService)
-	uploadService := service.NewUploadService(minioClient, conf.Minio, repository.User())
 	//创建表示层
 	userController := controller.NewUserController(userService)
 	authController := controller.NewAuthController(userService, authService)
@@ -127,9 +126,8 @@ func New(conf *config.Config, logger *logrus.Logger) (*Server, error) {
 	permissionController := controller.NewPermissionController(permissionService)
 	categoryController := controller.NewCategoryController(categoryService)
 	productController := controller.NewProductController(productService, userService)
-	uploadController := controller.NewUploadController(uploadService)
 	fileController := controller.NewFileController(fileService)
-	controllers := []controller.Controller{userController, authController, roleController, permissionController, productController, categoryController, uploadController, fileController}
+	controllers := []controller.Controller{userController, authController, roleController, permissionController, productController, categoryController, fileController}
 	e := gin.Default()
 	e.Use(
 		middleware.CORSMiddleware(),
